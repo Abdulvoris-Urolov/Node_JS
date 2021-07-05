@@ -1,12 +1,28 @@
-const { request } = require('express')
+const { request } = require('express');
 const express = require('express');
 const Joi = require('joi');
 const app = express();
-app.use(express.json());
+const logger = require('./logger');
+const helmet = require('helmet');
+const morgan = require('morgan');
+const config = require('config');
 
-app.get('/', (req, res) => {
-    res.send('Salom');
-});
+app.use(express.json());
+app.use(express.urlencoded({ extended: true}));
+app.use(express.static('public'));
+
+if(app.get('env') === 'development'){
+    app.use(morgan('tiny'));
+    console.log('Logger ishlayabdi...');
+}
+
+app.use(logger.nameAuth);
+app.use(helmet());
+console.log(config.get('name'));
+console.log(config.get('mailserver.host'));
+console.log(config.get('mailserver.password'));
+//console.log(process.env.NODE_ENV);
+//console.log(app.get('env'));
 
 const books = [
     { id: 1, name: 'rich dad poor dad' },
@@ -14,33 +30,12 @@ const books = [
     { id: 3, name: 'rework' }
 ];
 
-app.get('/api/books', (req,res) => {
-    res.send(books);
+app.get('/', (req, res) => {
+    res.send('Salom');
 });
 
-app.post('/api/books', (req, res) => {
-
-    const bookSchema = {
-        name: Joi.string().required().min(4)
-    };
-
-    const result = Joi.validate(req.body, bookSchema);
-    if (result.error){
-        return res.status(400).send(result.error.details[0].message);
-    }
-   // console.log(`req --- ${result.body}`)
-
-    const { error }=validateBook(req.body);
-    error(   
-         res.status(400).send(error.details[0].message)
-    )
-
-    const book = {
-        id: books.leght + 1,
-        name: req.body.name
-    };
-    books.push(book);
-    res.status(201).send(book);
+app.get('/api/books', (req,res) => {
+    res.send(books);
 });
 
 app.get('/api/books/:id', (req, res) => {
@@ -48,6 +43,20 @@ app.get('/api/books/:id', (req, res) => {
     if(!book)
     return res.status(404).send('Berilgan ID ga teng bo\`lgan kitob topilmadi');
         res.send(book);
+});
+
+app.post('/api/books', (req, res) => {
+
+    let { error } = validateBook(req.body);
+    if (error){
+        return res.status(400).send(error.details[0].message);
+    }
+    const book = {
+        id: books.length + 1,
+        name: req.body.name
+    };
+    books.push(book);
+    res.status(201).send(book);
 });
 
 app.put('/api/books/:id', (req, res) => {
@@ -58,10 +67,10 @@ app.put('/api/books/:id', (req, res) => {
         return res.status(404).send('Berilgan ID ga teng bo\`lgan kitob topilmadi');
     //Agarda kitob topilsa, so'rovni validatsiya qilish
     //Agarda so'rov validatsiyadan o'tmasa, 400 qaytaradi
-    const { error }=validateBook(req.body);
-    error(   
+    const { error } = validateBook(req.body);
+    if(error){   
         res.status(400).send(error.details[0].message)
-    )
+}
     //Kitobni yangilash 
     book.name = req.body.name;
     //Yangilangan kitobni qaytarish
@@ -88,12 +97,8 @@ function validateBook(book) {
                  .min(3)
     });
     
-    return bookSchema.validate(book, bookSchema);
+    return bookSchema.validate(book);
 }
-
-// app.get('api/articles/:year/:month', (req, res) => {
-//     res.send(req.query);
-// });
 
 const port = process.env.PORT || 3000;
 
