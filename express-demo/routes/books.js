@@ -11,14 +11,14 @@ const books = [
 router.get('/', (req,res) => {
     res.send(books);
 });
-
+//read
 router.get('/:id', (req, res) => {
     const book = books.find(b => b.id === parseInt(req.params.id));
     if(!book)
     return res.status(404).send('Berilgan ID ga teng bo\`lgan kitob topilmadi');
         res.send(book);
 });
-
+//create
 router.post('/', (req, res) => {
 
     let { error } = validateBook(req.body);
@@ -32,7 +32,7 @@ router.post('/', (req, res) => {
     books.push(book);
     res.status(201).send(book);
 });
-
+//update
 router.put('/:id', (req, res) => {
     //Kitobni bazadan izlab topish
     //Agar kitob mavjud bo'lmasa, 404 qaytaradi
@@ -50,7 +50,7 @@ router.put('/:id', (req, res) => {
     //Yangilangan kitobni qaytarish
     res.send(book);
 });
-
+//delete    
 router.delete('/:id', (req, res) =>{
     //kitobni idsi bo`yicha izlaymiz
     //agar topilmasa 404 qaytaramiz
