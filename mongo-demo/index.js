@@ -24,7 +24,7 @@ async function createBook(){
     author: 'Abdulvoris O`rolov',
     tags: [ 'JS', 'dasturlash','Nodejs darslar' ],
     isPublished: true
-});
+});w
 
 const savedBook = await book.save();
 console.log(savedBook);
@@ -35,19 +35,44 @@ async function getBooks(){
     const pageSize = 10;
 
     const books = await Book
-        // .find({author: /^A/})  //Muallifning ismi A harfi bilan boshlanganlarini topib beradi
-        // .find({author: /ov$/i}) //Muallifni ismi oxiri ov bilan tugaganlarini olib beradi
-        // .find({author: /.*ham.*/i}) // Muallifning ismida ham so`zi borlarini topib beradi
         .find({author: 'Abdulvoris O`rolov'}) 
         .skip((pageNumber - 1) * pageSize)
         .limit(pageSize)
         .sort({name: 1})
-        //.select({name: 1, tags: 1});
-        .count();
+        .select({name: 1, tags: 1});
     console.log(books);
 }
 
-getBooks();
+async function updateBook(id){
+    const book = await Book.findById(id);
+    if(!book)
+    return;
+
+    book.isPublished = true;
+    book.name = "NodeJS";
+    book.author = "Abdulvoris";
+
+   const updatedBook = await book.save();
+    console.log(updatedBook);
+}
+
+// async function updateBook2(id){
+//     const result = await Book.update({_id: id}, {
+//         $set:{
+//             author: "Urolov",
+//             isPublished: false
+//         }
+//     });
+
+//     console.log(result);
+// }
+
+async function deletedBook(id){
+    const result = await Book.deleteOne({ _id: id });
+    console.log(result);
+}
+
+deletedBook('60e407a8966e832b542a6d2b');
 
 
 
