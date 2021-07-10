@@ -17,19 +17,18 @@ const bookSchema = new mongoose.Schema({
 });
 
 const Book = mongoose.model("Book", bookSchema);
-
+//CREATE
 async function createBook(){
     const book = new Book({
     name: 'JavaScript darslari',
     author: 'Abdulvoris O`rolov',
     tags: [ 'JS', 'dasturlash','Nodejs darslar' ],
     isPublished: true
-});w
-
-const savedBook = await book.save();
-console.log(savedBook);
+});
+    const savedBook = await book.save();
+    console.log(savedBook);
 }
-
+//READ
 async function getBooks(){
     const pageNumber = 3;
     const pageSize = 10;
@@ -42,7 +41,7 @@ async function getBooks(){
         .select({name: 1, tags: 1});
     console.log(books);
 }
-
+//UPDATE
 async function updateBook(id){
     const book = await Book.findById(id);
     if(!book)
@@ -66,7 +65,7 @@ async function updateBook(id){
 
 //     console.log(result);
 // }
-
+//DELETE
 async function deletedBook(id){
     const result = await Book.deleteOne({ _id: id });
     console.log(result);
