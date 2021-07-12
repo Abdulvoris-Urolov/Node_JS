@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const mongoose =require('mongoose');
 
-mongoose.connect('mongodb://localhost/sport',  { useNewUrlParser: true },  { useUnifiedTopology: true })
+mongoose.connect('mongodb://localhost/sport',  { useNewUrlParser: true, useUnifiedTopology: true })
     .then( () => {
         console.log('Mongoga ulanish hosil bo\'ldi.');
     })
@@ -48,4 +48,8 @@ async function deleteSport(id){
     const result =await Sport.deleteOne({_id: id});
     console.log(result);
 }
-deleteSport('60e94054596ca323bcd1b12e');
+// deleteSport('60e94054596ca323bcd1b12e');
+
+app.listen(1000, () =>{
+    console.log('1000-port ishlayabdi');
+});

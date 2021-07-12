@@ -1,4 +1,5 @@
 const express = require('express');
+// const mongoose = require('mongoose');
 const app = express();
 const logger = require('./middleware/logger');
 const helmet = require('helmet');
@@ -14,6 +15,14 @@ app.set('view engine', 'push');
 app.set('views', '/view');
 app.use('/api/books', books);
 app.use('/', home);
+
+// mongoose.connect('mongodb://localhost/Books',  { useNewUrlParser: true, useUnifiedTopology: true })
+//     .then( () => {
+//         console.log('Mongoga ulanish hosil bo\'ldi.');
+//     })
+//     .catch((err)=>{
+//         console.error('Mongoga ulanish vaqtida xato yuz berdi.', err);
+//     });
 
 if(app.get('env') === 'development'){
     app.use(morgan('tiny'));
