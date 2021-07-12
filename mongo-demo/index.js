@@ -1,5 +1,6 @@
+//mongoose ni yuklab olish
 const mongoose = require('mongoose');
-
+//mongodb ga ulanish
 mongoose.connect('mongodb://localhost/test', {useNewUrlParse: true }, {useUnifiledTopology: true })
     .then(() => {
         console.log('MongoDBga ulanish hosil qilindi...');
@@ -7,26 +8,65 @@ mongoose.connect('mongodb://localhost/test', {useNewUrlParse: true }, {useUnifil
     .catch((err) => {
         console.error('MongoDBga ulanish vaqtida xato ro`y berdi...', err);
     });
-
+//Sxema tuzib olish yani siz kiritayotgan kirob nimalarga asoslanib yozilib kiritilishi kerakligi
 const bookSchema = new mongoose.Schema({
-    name: String,
+    name: {
+        type: String, 
+        required: true,
+        minlength: 3,
+        maxlength: 100
+    },
     author: String,
-    tags: [ String ],
+    tags: {
+        type: Array,
+        validate:{
+            isAsync: true,
+            validator: function(val, callback) {
+                setTimeout(() => {
+                    const result =  val && val.length > 0;
+                    callback(result);
+                }, 10);
+            },
+            message: 'Kitobning eng kamida bitta tegi bo`lishi kerak'
+        }
+    },
     date: { type: Date, default: Date.now },
-    isPublished: Boolean
+    isPublished: Boolean,
+    price: {
+        type: Number,
+        required: function()    {
+            return this.isPublished;
+        },
+        min: 3,
+        max: 100,
+        get: val => Math.round(val),
+        set: val => Math.round(val)
+    },
+    category: {
+        type: String,
+        required: true,
+        enum: ['classic', 'biology', 'science'],
+        lowercase: true,
+        trim: true
+    }
 });
-
 const Book = mongoose.model("Book", bookSchema);
 //CREATE
 async function createBook(){
     const book = new Book({
     name: 'JavaScript darslari',
     author: 'Abdulvoris O`rolov',
-    tags: [ 'JS', 'dasturlash','Nodejs darslar' ],
-    isPublished: true
+    tags:[ 'JS', 'dasturlash','Nodejs darslar' ],
+    isPublished: true,
+    price: 50.8,
+    category: 'classic'
 });
+    try{
     const savedBook = await book.save();
     console.log(savedBook);
+    }catch(ex){
+        console.log(ex);
+    }
 }
 //READ
 async function getBooks(){
@@ -54,7 +94,6 @@ async function updateBook(id){
    const updatedBook = await book.save();
     console.log(updatedBook);
 }
-
 // async function updateBook2(id){
 //     const result = await Book.update({_id: id}, {
 //         $set:{
@@ -71,7 +110,7 @@ async function deletedBook(id){
     console.log(result);
 }
 
-deletedBook('60e407a8966e832b542a6d2b');
+createBook();
 
 
 

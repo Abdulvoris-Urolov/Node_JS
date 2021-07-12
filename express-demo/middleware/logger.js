@@ -8,5 +8,5 @@ function authion(req, res, next){
     next();
 }
 
-module.exports.nameLog= log;
-module.exports.nameAuth= authion;
+module.exports.nameLog = log;
+module.exports.nameAuth = authion;
