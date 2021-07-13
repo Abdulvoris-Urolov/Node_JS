@@ -1,15 +1,6 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const router = express.Router();
-const Joi = require('joi');
-
-const categorySchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true
-    }
-});
-const Category = mongoose.model('Category', categorySchema);
+const { Category, validate } = require('../models/category');
 
 router.get('/', async (req, res) =>{
     const categories =await Category.find();
@@ -25,7 +16,7 @@ router.get('/:id', async (req, res) =>{
 });
 
 router.post('/', async (req, res)=> {
-    const { error } = validateCategory(req.body);
+    const { error } = validate(req.body);
     if(error)
     res.status(404).send(error.message);
 
@@ -38,7 +29,7 @@ router.post('/', async (req, res)=> {
 });
 
 router.put('/:id', async (req, res) =>{
-    const {error} = validateCategory(req.body);
+    const {error} = validate(req.body);
     if(error)
      return res.status(400).send(error.message);
     
@@ -57,14 +48,5 @@ router.delete('/:id', async (req, res) =>{
 
     res.send(categoryDelete);
 });
-
-function validateCategory(categoryJoi){
-    const schema = Joi.object({
-        name: Joi.string()
-                 .required()
-    });
-
-return schema.validate(categoryJoi);
-}
 
 module.exports = router;

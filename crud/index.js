@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
 const categoriesRoute = require('./routes/categories');
+const customersRoute = require('./routes/customers');
 
 mongoose.connect('mongodb://localhost/home', { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false })
     .then(() =>{
@@ -13,6 +14,7 @@ mongoose.connect('mongodb://localhost/home', { useNewUrlParser: true, useUnified
 
 app.use(express.json());
 app.use('/api/categories', categoriesRoute);
+app.use('/api/customers', customersRoute);
 
 app.get('/', (req, res) =>{
     res.send('salom');
