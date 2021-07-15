@@ -14,7 +14,7 @@ const Book = mongoose.model('Book', new mongoose.Schema({
     title: String,
     author: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'author'
+        ref: 'Author'
     }   
 }));
 
@@ -42,7 +42,7 @@ async function createBook(title, authorId){
 async function listBooks(){
     const book = await Book
         .find()
-        //.populate('author', 'firstName - _id')
+        .populate('author', 'firstName -_id')
         .select('title author');
     console.log(book);
 }
